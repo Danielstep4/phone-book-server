@@ -10,7 +10,7 @@ export default mongoose.connections[0].readyState
   ? mongoose.model<ContactDocument, ContactModel>("Contact")
   : mongoose.model<ContactDocument, ContactModel>("Contact", ContactSchema);
 
-type Contact = { phone: string; fullname: string; description?: string };
+export type Contact = { phone: string; fullname: string; description?: string };
 
 interface ContactDocument extends Contact, Document {}
 

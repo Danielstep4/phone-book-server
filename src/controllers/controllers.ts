@@ -1,9 +1,10 @@
-import Contact from "../models/contact";
+import ContactModel from "../models/contact";
+import type { Contact } from "../models/contact";
 import type express from "express";
 
 const getAllContacts = async (_req: express.Request, res: express.Response) => {
   try {
-    const contacts = await Contact.find({}).exec();
+    const contacts = await ContactModel.find({}).exec();
     if (contacts && contacts.length) {
       return res.status(200).json(contacts);
     }
@@ -21,7 +22,7 @@ const getContactByName = async (
   if (req.params && req.params.fullname) {
     const { fullname } = req.params as { fullname: string };
     try {
-      const allContacts = await Contact.find({ fullname });
+      const allContacts = await ContactModel.find({ fullname });
       if (allContacts.length) return res.status(200).json(allContacts);
       return res.status(401).send("None");
     } catch (e) {
@@ -33,17 +34,13 @@ const getContactByName = async (
 };
 
 const setNewContact = async (req: express.Request, res: express.Response) => {
-  const { fullname, phone, description } = req.body as {
-    fullname?: string;
-    phone?: string;
-    description?: string;
-  };
+  const { fullname, phone, description } = req.body as Contact;
   if (!fullname || !phone)
     return res
       .status(400)
       .send("Bed request! Please provide both fullname and phone number");
 
-  const newContact = new Contact({
+  const newContact = new ContactModel({
     fullname,
     phone,
     description,
