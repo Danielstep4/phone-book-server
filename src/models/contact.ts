@@ -1,7 +1,7 @@
 import mongoose, { Document, Model } from "mongoose";
 
 const ContactSchema = new mongoose.Schema<ContactDocument, ContactModel>({
-  phone: { type: String, required: true },
+  phone: { type: String, required: true, unique: true },
   fullname: { type: String, required: true },
   description: String,
 });
