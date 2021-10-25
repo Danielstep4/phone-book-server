@@ -20,6 +20,8 @@ const connectDB = async () => {
 // If the connection is disconnected
 mongoose.connection.on("disconnected", () => {
   console.log("db connection disconnected.");
+  console.log("Trying to reconnect...");
+  connectDB();
 });
 // If the Node process ends, close the Mongoose connection
 process.on("SIGINT", () => {

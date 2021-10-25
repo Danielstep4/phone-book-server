@@ -1,10 +1,12 @@
 import ContactModel from "../models/contact";
 import type { Contact } from "../models/contact";
 import type express from "express";
+import { verifyPhone } from "../utils/verifyPhone";
 
 const getAllContacts = async (_req: express.Request, res: express.Response) => {
   try {
-    const contacts = await ContactModel.find({}).exec();
+    // #TODO: Fix SOrt
+    const contacts = await ContactModel.find({}).sort({ fullname: 1 }).exec();
     if (contacts) {
       return res.status(200).json(contacts);
     }
@@ -22,7 +24,9 @@ const getContactByName = async (
   if (req.params && req.params.fullname) {
     const { fullname } = req.params as { fullname: string };
     try {
-      const allContacts = await ContactModel.find({ fullname });
+      const allContacts = await ContactModel.find({
+        fullname: fullname.trim().toLowerCase(),
+      });
       if (allContacts) return res.status(200).json(allContacts);
       return res.status(404).send("None");
     } catch (e) {
@@ -35,19 +39,26 @@ const getContactByName = async (
 
 const setNewContact = async (req: express.Request, res: express.Response) => {
   const { fullname, phone, description } = req.body as Contact;
-  if (!fullname || !phone)
+  if (
+    !fullname.trim() ||
+    !phone.trim() ||
+    !verifyPhone(phone) ||
+    fullname.length > 32
+  )
     return res
       .status(400)
-      .send("Bed request! Please provide both fullname and phone number");
+      .send(
+        "Bed request! Please provide both fullname and phone number. (max: 32 characters)"
+      );
 
   const newContact = new ContactModel({
-    fullname,
-    phone,
+    fullname: fullname.toLowerCase().trim(),
+    phone: phone.trim(),
     description,
   });
   try {
-    await newContact.save();
-    return res.status(201).send("New Contact " + fullname + " has been saved.");
+    const contact = await newContact.save();
+    return res.status(201).json(contact);
   } catch (e) {
     console.error(e);
     return res.status(500).send("Server error! Please try again later.");
