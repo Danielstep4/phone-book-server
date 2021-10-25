@@ -5,7 +5,7 @@ import type express from "express";
 const getAllContacts = async (_req: express.Request, res: express.Response) => {
   try {
     const contacts = await ContactModel.find({}).exec();
-    if (contacts && contacts.length) {
+    if (contacts) {
       return res.status(200).json(contacts);
     }
     return res.status(404).send("None");
@@ -23,8 +23,8 @@ const getContactByName = async (
     const { fullname } = req.params as { fullname: string };
     try {
       const allContacts = await ContactModel.find({ fullname });
-      if (allContacts.length) return res.status(200).json(allContacts);
-      return res.status(401).send("None");
+      if (allContacts) return res.status(200).json(allContacts);
+      return res.status(404).send("None");
     } catch (e) {
       console.error(e);
       return res.status(500).send("Server error! Please try again later.");

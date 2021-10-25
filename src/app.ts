@@ -10,11 +10,11 @@ dotenv.config();
 const app = express();
 
 // Global middleware
-app.use("/api", router);
+app.use(cors());
 app.use(helmet());
 app.use(express.json());
-app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+app.use("/api", router);
 
 const PORT = process.env.PORT || 8080;
 
